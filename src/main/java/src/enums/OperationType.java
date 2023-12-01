@@ -2,5 +2,5 @@ package src.enums;
 
 public enum OperationType {
 
-    READ, SAVE, MODIFY, DELETE, CLOSE_EXCHANGE, CLOSE_SERVER
+    READ, SAVE, DELETE, LIST_OF_SERVERS, HEALTH_CHECK, CLOSE_SERVER
 }
