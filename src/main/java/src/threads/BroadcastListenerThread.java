@@ -25,7 +25,7 @@ public class BroadcastListenerThread implements Runnable {
     @Override
     public void run() {
         byte[] data;
-        int previousServerNumber = 0;
+        int previousServerNumber;
         while (isRunning) {
             previousServerNumber = servers.size();
             data = receiveBroadcastData();

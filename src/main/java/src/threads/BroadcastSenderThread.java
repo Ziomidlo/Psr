@@ -2,6 +2,7 @@ package src.threads;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import src.Utils;
 
 import java.io.IOException;
 import java.net.*;
@@ -24,23 +25,13 @@ public class BroadcastSenderThread implements Runnable {
 
     @Override
     public void run() {
-        String ipAddress = getIpAddress();
-        if (ipAddress == null) {
+        String ipAddress = Utils.getIpAddress(serverPort);
+        if (ipAddress.isEmpty()) {
             LOGGER.error("");
         } else {
             while (isRunning) {
                 sendBroadcast(ipAddress);
             }
-        }
-    }
-
-    private String getIpAddress() {
-        try {
-            return InetAddress.getLocalHost().getHostAddress() + ":" + serverPort;
-        } catch (UnknownHostException e) {
-            LOGGER.error("");
-            e.printStackTrace();
-            return null;
         }
     }
 

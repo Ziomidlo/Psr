@@ -3,11 +3,15 @@ package src;
 import src.enums.OperationType;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class DTO implements Serializable {
 
     private OperationType operation;
+    private String key;
     private byte[] data;
+    private boolean isDataFromAnotherInstance;
 
     public DTO() {
     }
@@ -16,9 +20,33 @@ public class DTO implements Serializable {
         this.operation = operation;
     }
 
+    public DTO(OperationType operation, String key) {
+        this.operation = operation;
+        this.key = key;
+    }
+
+    public DTO(OperationType operation, String key, boolean isDataFromAnotherInstance) {
+        this.operation = operation;
+        this.key = key;
+        this.isDataFromAnotherInstance = isDataFromAnotherInstance;
+    }
+
     public DTO(OperationType operation, byte[] data) {
         this.operation = operation;
         this.data = data;
+    }
+
+    public DTO(OperationType operation, String key, byte[] data) {
+        this.operation = operation;
+        this.key = key;
+        this.data = data;
+    }
+
+    public DTO(OperationType operation, String key, byte[] data, boolean isDataFromAnotherInstance) {
+        this.operation = operation;
+        this.key = key;
+        this.data = data;
+        this.isDataFromAnotherInstance = isDataFromAnotherInstance;
     }
 
     public OperationType getOperation() {
@@ -29,11 +57,27 @@ public class DTO implements Serializable {
         this.operation = operation;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     public byte[] getData() {
         return data;
     }
 
     public void setData(byte[] data) {
         this.data = data;
+    }
+
+    public boolean isDataFromAnotherInstance() {
+        return isDataFromAnotherInstance;
+    }
+
+    public void setDataFromAnotherInstance(boolean dataFromAnotherInstance) {
+        isDataFromAnotherInstance = dataFromAnotherInstance;
     }
 }
