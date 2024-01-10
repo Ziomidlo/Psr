@@ -3,9 +3,13 @@ package src;
 import src.enums.OperationType;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Objects;
 
+/***
+ * Obiekt DTO uzywany do komunikacji klient-serwer, serwer-serwer.
+ * Zawiera wykonywana operacje, klucz przypisany do pliku, przekazywane dane (plik),
+ * oraz flage odpowiedzialna za mozliwosc ustalenia czy zadanie wyslane zostalo z klienta
+ * czy z innej instancji.
+ */
 public class DTO implements Serializable {
 
     private OperationType operation;

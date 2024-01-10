@@ -11,6 +11,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Set;
 
+/***
+ * Watek odpowiedzialny za sprawdzanie co 5 sek. czy kazda z instancji dziala i odpowiada.
+ * Jezeli nie, zostaje ona usunieta z pamieci.
+ */
 public class HealthCheckThread implements Runnable {
 
     private final Logger LOGGER = LogManager.getLogger(HealthCheckThread.class);
@@ -24,6 +28,9 @@ public class HealthCheckThread implements Runnable {
         this.isRunning = isRunning;
     }
 
+    /***
+     * Glowna metoda watku.
+     */
     @Override
     public void run() {
         DTO dto = new DTO(OperationType.HEALTH_CHECK);
@@ -44,8 +51,7 @@ public class HealthCheckThread implements Runnable {
             try {
                 Thread.sleep(5000);
             } catch (Exception ex) {
-                LOGGER.error("");
-                ex.printStackTrace();
+                LOGGER.error("Error while waiting for next iteration of health check.");
             }
         }
     }

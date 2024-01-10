@@ -12,6 +12,9 @@ import java.net.*;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/***
+ * Klasa reprezentujaca serwer.
+ */
 class Server {
 
     private final Logger LOGGER = LogManager.getLogger(Server.class);
@@ -25,6 +28,12 @@ class Server {
         this.servers = ConcurrentHashMap.newKeySet();
     }
 
+    /***
+     * Metoda odpowiedzialna za uruchomienie serwera. Uruchamiane sa tutaj watki dotyczace wysylania i
+     * odczytywania broadcastu oraz watek odpowiedzialny za healthcheck. Znajduje sie tutaj rowniez glowna petla
+     * programu, w ktorej znajduje sie nasluch na polaczenia klienckie. W przypadku zaakceptowania polaczenia klienta,
+     * zostaje ono przekazane na odrebny watek serwera.
+     */
     public void start() throws UnknownHostException {
         new Thread(new BroadcastSenderThread(broadcastPort, serverSocket.getLocalPort(), isRunning)).start();
         new Thread(new BroadcastListenerThread(servers, broadcastPort, isRunning)).start();
@@ -35,8 +44,7 @@ class Server {
                 clientSocket = serverSocket.accept();
                 new ServerThread(serverSocket, clientSocket, servers, isRunning).run();
             } catch (Exception ex) {
-                LOGGER.error("");
-                ex.printStackTrace();
+                LOGGER.error("Error while accepting client connection.");
             }
         }
     }

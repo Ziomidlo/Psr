@@ -17,6 +17,10 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.Set;
 
+/***
+ * Watek odpowiedzialny za przetwarzanie poszczegolnych zadan wysylanych do obecnej instancji, zarowno z
+ * innych instancji jak i od klientow.
+ */
 public class ServerThread implements Runnable {
 
     private final Logger LOGGER = LogManager.getLogger(ServerThread.class);
@@ -39,14 +43,23 @@ public class ServerThread implements Runnable {
         this.isRunning = isRunning;
     }
 
+    /***
+     * Glowna metoda watku.
+     */
     @Override
     public void run() {
         try {
             processOperation(receiveData());
             closeClientConnection();
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+            LOGGER.error("Error while processing client request.");
+        }
     }
 
+    /***
+     * Metoda odpowiedzialna za ustalenie jaka operacja powinna zostac wykonana.
+     * @param dto Obiekt DTO otrzymywany od klienta/innej instancji.
+     */
     private void processOperation(DTO dto) throws Exception {
         if (dto == null || dto.getOperation() == null) throw new Exception("Incorrect DTO");
         switch (dto.getOperation()) {
@@ -64,6 +77,11 @@ public class ServerThread implements Runnable {
         }
     }
 
+    /***
+     * Metoda odpowiedzialna za odczytanie i zwrocenie pliku z instacji. W przypadku jego braku, odpytywane sa inne
+     * instancje.
+     * @param dto DTO.
+     */
     private void readFile(DTO dto) throws IOException {
         File file = new File(FILES_PATH + dto.getKey());
         byte[] data = Files.readAllBytes(file.toPath());
@@ -77,6 +95,9 @@ public class ServerThread implements Runnable {
         sendResponse(new DTO(OperationType.READ, data));
     }
 
+    /***
+     * Metoda odpowiedzialna za zwrocenie listy plikow na instancji.
+     */
     private void readAllFiles() throws IOException {
         File file = new File(FILES_PATH);
         String[] fileNames = file.list();
@@ -84,6 +105,11 @@ public class ServerThread implements Runnable {
         sendResponse(new DTO(OperationType.READ_ALL, fileNamesAsBytes));
     }
 
+    /***
+     * Metoda odpowiedzialna za utworzenie pliku na instancji. W przypadku gdy brakuje na niej miejsca,
+     * plik tworzony jest na innej. Ponadto, tworzona jest kopia zapasowa pliku na innej instancji.
+     * @param dto DTO.
+     */
     private void createFile(DTO dto) throws IOException {
         String alternativeServerIpAddress = "";
         if (getAvailableBytes() >= dto.getData().length) {
@@ -108,6 +134,11 @@ public class ServerThread implements Runnable {
         sendResponse(new DTO(OperationType.SAVE, dto.getKey()));
     }
 
+    /***
+     * Metoda odpowiedzialna za usuniecie pliku z instancji. Plik usuwany jest rowniez z innych instancji,
+     * gdzie przechowywany jest jako kopia zapasowa.
+     * @param dto DTO.
+     */
     private void deleteFile(DTO dto) throws IOException {
         File file = new File(FILES_PATH + dto.getKey());
         try {
@@ -126,6 +157,12 @@ public class ServerThread implements Runnable {
         sendResponse(new DTO(OperationType.DELETE));
     }
 
+    /***
+     * Metoda odpowiedzialna za odczytanie pliku z innej instancji.
+     * @param key Klucz przyporzadkowany do pliku.
+     * @param server IP i port instancji.
+     * @return Plik w postaci tablicy bajtow, lub pusta tablica bajtow w przypadku jego braku na wskazanej instancji.
+     */
     private byte[] readFileAtAnotherInstance(String key, String server) {
         String [] serverParts = server.split(":");
         try (Socket serverSocket = new Socket(serverParts[0], Integer.parseInt(serverParts[1]));
@@ -135,11 +172,18 @@ public class ServerThread implements Runnable {
             writer.flush();
             return reader.readAllBytes();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error("Error while reading file at another instance.");
             return new byte[0];
         }
     }
 
+    /***
+     * Metoda odpowiedzialna za stworzenie pliku na innej instancji.
+     * @param key Klucz przyporzadkowany do pliku.
+     * @param data Plik w postaci tablicy bajtow.
+     * @param server IP i port instancji.
+     * @return true - zapis pomyslny, false - zapis niepomyslny.
+     */
     private boolean createFileAtAnotherInstance(String key, byte[] data, String server) {
         String [] serverParts = server.split(":");
         try (Socket serverSocket = new Socket(serverParts[0], Integer.parseInt(serverParts[1]));
@@ -150,11 +194,17 @@ public class ServerThread implements Runnable {
             DTO dto = (DTO) reader.readObject();
             return !dto.getKey().isBlank();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error("Error while creating file at another instance.");
             return false;
         }
     }
 
+    /***
+     * Metoda odpowiedzialna za usuniecie pliku na innej instancji.
+     * @param key Klucz przyporzadkowany do pliku.
+     * @param server IP i port instancji.
+     * @return true - usuniecie pomyslne, false - usuniecie niepomyslne.
+     */
     private boolean deleteFileAtAnotherInstance(String key, String server) {
         String [] serverParts = server.split(":");
         try (Socket serverSocket = new Socket(serverParts[0], Integer.parseInt(serverParts[1]));
@@ -164,29 +214,48 @@ public class ServerThread implements Runnable {
             writer.flush();
             return reader.readBoolean();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error("Error while deleting file at another instance.");
             return false;
         }
     }
 
+    /***
+     * Metoda odpowiedzialna za zwrocenie ilosci dostepnych bajtow przestrzeni dyskowej instancji.
+     * @return Ilosc dostepnych bajtow miejsca na dysku.
+     */
     private Long getAvailableBytes() {
         return new File(FILES_PATH).getUsableSpace();
     }
 
+    /***
+     * Metoda odpowiedzialna za otrzymanie danych od klienta/innej instancji.
+     * @return Obiekt DTO.
+     */
     private DTO receiveData() throws IOException, ClassNotFoundException {
         return (DTO) reader.readObject();
     }
 
+    /***
+     * Metoda odpowiedzialna za wyslanie odpowiedzi.
+     * @param dto Obiekt DTO.
+     */
     private void sendResponse(DTO dto) throws IOException {
         writer.writeObject(dto);
         writer.flush();
     }
 
+    /***
+     * Metoda odpowiedzialna za wyslanie odpowiedzi w postaci uproszczonej (true/false zamiast obiektu DTO).
+     * @param response Odpowiedz - true/false.
+     */
     private void sendSimplifiedResponse(boolean response) throws IOException {
         writer.writeBoolean(response);
         writer.flush();
     }
 
+    /***
+     * Metoda odpowiedzialna za zamkniecie polaczenia z klientem.
+     */
     private void closeClientConnection() throws IOException {
         clientSocket.close();
         reader.close();
@@ -194,6 +263,9 @@ public class ServerThread implements Runnable {
         Thread.currentThread().interrupt();
     }
 
+    /***
+     * Metoda odpowiedzialna za zamkniecie instancji serwera.
+     */
     private void closeServer() throws IOException {
         serverSocket.close();
         closeClientConnection();
