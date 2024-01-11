@@ -38,6 +38,7 @@ class Server {
         new Thread(new BroadcastSenderThread(broadcastPort, serverSocket.getLocalPort(), isRunning)).start();
         new Thread(new BroadcastListenerThread(servers, broadcastPort, isRunning)).start();
         new Thread(new HealthCheckThread(servers, serverSocket.getLocalPort(), isRunning)).start();
+        LOGGER.info("Instance addrress: " + Utils.getIpAddress(serverSocket.getLocalPort()));
         Socket clientSocket;
         while (isRunning) {
             try {

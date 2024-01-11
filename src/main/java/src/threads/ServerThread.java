@@ -7,10 +7,7 @@ import src.DTO;
 import src.Utils;
 import src.enums.OperationType;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -31,14 +28,14 @@ public class ServerThread implements Runnable {
     private Set<String> servers;
     private Boolean isRunning;
 
-    private final String FILES_PATH = "C:\\";
+    private final String FILES_PATH = "C:\\server_files\\";
 
     public ServerThread(ServerSocket serverSocket, Socket clientSocket, Set<String> servers,
-                        boolean isRunning) throws IOException {
+                        Boolean isRunning) throws IOException {
         this.serverSocket = serverSocket;
         this.clientSocket = clientSocket;
-        this.reader = new ObjectInputStream(clientSocket.getInputStream());
         this.writer = new ObjectOutputStream(clientSocket.getOutputStream());
+        this.reader = new ObjectInputStream(clientSocket.getInputStream());
         this.servers = servers;
         this.isRunning = isRunning;
     }
@@ -71,7 +68,7 @@ public class ServerThread implements Runnable {
             case HEALTH_CHECK -> sendSimplifiedResponse(true);
             case CLOSE_SERVER -> {
                 closeServer();
-                isRunning = false;
+                isRunning = Boolean.FALSE;
                 sendSimplifiedResponse(true);
             }
         }
@@ -84,7 +81,10 @@ public class ServerThread implements Runnable {
      */
     private void readFile(DTO dto) throws IOException {
         File file = new File(FILES_PATH + dto.getKey());
-        byte[] data = Files.readAllBytes(file.toPath());
+        byte[] data = null;
+        try {
+            data = Files.readAllBytes(file.toPath());
+        } catch (NoSuchFileException ex) {}
         if (!dto.isDataFromAnotherInstance() && (data == null || data.length == 0)) {
             for (String server : servers) {
                 if (server.equals(Utils.getIpAddress(serverSocket.getLocalPort()))) continue;
@@ -144,7 +144,7 @@ public class ServerThread implements Runnable {
         try {
             Files.delete(file.toPath());
         } catch (NoSuchFileException ex) {
-            sendSimplifiedResponse(false);
+            if (dto.isDataFromAnotherInstance()) sendSimplifiedResponse(false);
         }
         if (!dto.isDataFromAnotherInstance()) {
             for (String server : servers) {
@@ -170,7 +170,8 @@ public class ServerThread implements Runnable {
              ObjectOutputStream writer = new ObjectOutputStream(serverSocket.getOutputStream())) {
             writer.writeObject(new DTO(OperationType.READ, key, true));
             writer.flush();
-            return reader.readAllBytes();
+            DTO dto = (DTO) reader.readObject();
+            return dto.getData();
         } catch (Exception ex) {
             LOGGER.error("Error while reading file at another instance.");
             return new byte[0];
@@ -210,7 +211,7 @@ public class ServerThread implements Runnable {
         try (Socket serverSocket = new Socket(serverParts[0], Integer.parseInt(serverParts[1]));
              ObjectInputStream reader = new ObjectInputStream(serverSocket.getInputStream());
              ObjectOutputStream writer = new ObjectOutputStream(serverSocket.getOutputStream())) {
-            writer.writeObject(new DTO(OperationType.DELETE, key));
+            writer.writeObject(new DTO(OperationType.DELETE, key, true));
             writer.flush();
             return reader.readBoolean();
         } catch (Exception ex) {

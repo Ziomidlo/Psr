@@ -2,6 +2,7 @@ package src;
 
 import src.enums.OperationType;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /***
@@ -11,6 +12,9 @@ import java.io.Serializable;
  * czy z innej instancji.
  */
 public class DTO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private OperationType operation;
     private String key;
