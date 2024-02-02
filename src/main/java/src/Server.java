@@ -2,10 +2,7 @@ package src;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import src.threads.BroadcastListenerThread;
-import src.threads.BroadcastSenderThread;
-import src.threads.HealthCheckThread;
-import src.threads.ServerThread;
+import src.threads.*;
 
 import java.io.IOException;
 import java.net.*;

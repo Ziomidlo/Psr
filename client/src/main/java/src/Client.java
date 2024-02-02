@@ -2,79 +2,114 @@ package src;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import src.enums.OperationType;
-import src.threads.BroadcastListenerThread;
-import java.util.HashSet;
+import src.threads.ClientBroadcastListenerThread;
+import src.threads.ClientCommunicationThread;
+
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Scanner;
-import java.util.Set;
 
 /***
- * Klasa reprezentujaca klienta.
+ * Klasa reprezentująca klienta.
  */
-public class Client {
+public class Client implements ServerConnectionListener {
 
     private static final Logger LOGGER = LogManager.getLogger(Client.class);
     private static Boolean isRunning;
+    private static Socket serverSocket;
+    private static ClientCommunicationThread communicationThread;
+    private static boolean communicationThreadStarted = false;
+
+    @Override
+    public void onServerConnected(Socket serverSocket, ServerInfo server) throws IOException {
+        System.out.println("Nawiązano połączenie z serwerem: " + server);
+        communicationThread = new ClientCommunicationThread(serverSocket);
+        Thread thread = new Thread(communicationThread);
+        thread.start();
+        communicationThreadStarted = true;
+    }
 
     public static void main(String[] args) {
+        isRunning = true;
+        ClientBroadcastListenerThread broadcastListenerThread = new ClientBroadcastListenerThread(8081, isRunning);
+        broadcastListenerThread.setServerConnectionListener(new Client());
+        Thread broadcastThread = new Thread(broadcastListenerThread);
+        broadcastThread.start();
 
-        Set<ServerInfo> availableServers = new HashSet<>();
-        int broadcastPort = 8081;
-
-        Thread broadcastListenerThread = new Thread(new BroadcastListenerThread(availableServers, broadcastPort));
-        broadcastListenerThread.start();
-
-        // Wątek wybierający serwer z dostępnych
-        Thread serverChooserThread = new Thread(() -> {
+        try {
             Scanner scanner = new Scanner(System.in);
-            while (true) {
-                displayAvailableServers(availableServers);
-                System.out.println("Wybierz numer serwera (0 - odśwież, -1 - wyjście):");
+            while (isRunning) {
+                if (communicationThreadStarted) {
+                printMenu();
                 int choice = scanner.nextInt();
 
-                if (choice == 0) {
-                    continue;
-                } else if (choice == -1) {
-                    broadcastListenerThread.interrupt();
-                    break;
-                }
-
-                ServerInfo selectedServer = getServerByChoice(availableServers, choice);
-                if (selectedServer != null) {
-                    // Nawiązanie połączenia z wybranym serwerem
-                    connectToServer(selectedServer);
-                    System.out.println("Połączono z serwerem!" + selectedServer);
-                    break;
+                    switch (choice) {
+                        case 1:
+                            createFile();
+                            break;
+                        case 2:
+                            deleteFile();
+                            break;
+                        case 3:
+                            readFile();
+                            break;
+                        case 4:
+                            broadcastThread.interrupt();
+                            closeConnection();
+                            isRunning = false;
+                            System.out.println("Pomyslnie zakonczono prace klienta.");
+                            break;
+                        default:
+                            System.out.println("Niepoprawny wybór. Wybierz ponownie.");
+                    }
                 } else {
-                    System.out.println("Nieprawidłowy numer serwera. Spróbuj ponownie.");
+                    System.out.println("Czekam na połączenie z serwerem...");
+                    Thread.sleep(1000);
                 }
             }
-        });
-        serverChooserThread.start();
-    }
-
-    private static ServerInfo getServerByChoice(Set<ServerInfo> availableServers, int choice) {
-        int index = 1;
-        for (ServerInfo server : availableServers) {
-            if (index == choice) {
-                return server;
-            }
-            index++;
+        } catch (Exception e) {
+            LOGGER.error("Error in the client main loop.", e);
         }
-        return null;
     }
 
-    private static void displayAvailableServers(Set<ServerInfo> availableServers) {
-        System.out.println("Dostępne serwery:");
-        int index = 1;
-        for (ServerInfo server : availableServers) {
-            System.out.println(index++ + ". " + server);
-        }
-        System.out.println("0. Odśwież");
-        System.out.println("-1. Wyjście");
+    private static void printMenu() {
+        System.out.println("Wybierz opcję:");
+        System.out.println("1 - Utwórz nowy plik");
+        System.out.println("2 - Usuń plik");
+        System.out.println("3 - Odczytaj plik");
+        System.out.println("4 - Wyjdź");
     }
 
-    private static void connectToServer(ServerInfo server) {
-            //Tu będzie dodawanie wczytywanie i uruchamianie plików.
+    private static void createFile() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Podaj nazwę pliku do stworzenia: ");
+        String fileName = scanner.nextLine();
+
+        System.out.println("Podaj zawartość pliku: ");
+        byte[] fileData = scanner.nextLine().getBytes();
+
+        communicationThread.createFile(fileName, fileData);
     }
+
+    private static void deleteFile() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Podaj nazwę pliku do usunięcia:");
+        String fileName = scanner.nextLine();
+
+        communicationThread.deleteFile(fileName);
+    }
+
+    private static void readFile() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Podaj nazwę pliku do odczytu:");
+        String fileName = scanner.nextLine();
+
+        communicationThread.readFile(fileName);
+    }
+
+    private static void closeConnection() throws IOException {
+        communicationThread.closeConnection();
+    }
+
+
 }

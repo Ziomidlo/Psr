@@ -49,7 +49,7 @@ public class ServerThread implements Runnable {
             processOperation(receiveData());
             closeClientConnection();
         } catch (Exception ex) {
-            LOGGER.error("Error while processing client request.");
+//            LOGGER.error("Error while processing client request.");
         }
     }
 
@@ -242,7 +242,7 @@ public class ServerThread implements Runnable {
      */
     private void sendResponse(DTO dto) throws IOException {
         writer.writeObject(dto);
-        writer.flush();
+         writer.flush();
     }
 
     /***

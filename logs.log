@@ -1,0 +1,86 @@
+2024-02-02 22:39:24 INFO  Instance addrress: 10.15.18.220:60413
+2024-02-02 22:39:39 ERROR Error in the client main loop.
+java.lang.NullPointerException: Cannot invoke "src.DTO.getOperation()" because "this.receivedData" is null
+	at src.threads.ClientCommunicationThread.readFile(ClientCommunicationThread.java:53) ~[classes/:?]
+	at src.Client.readFile(Client.java:125) ~[classes/:?]
+	at src.Client.main(Client.java:69) [classes/:?]
+2024-02-02 22:44:43 INFO  Instance addrress: 10.15.18.220:60450
+2024-02-02 22:49:30 INFO  Instance addrress: 10.15.18.220:60667
+2024-02-02 22:51:17 INFO  Number of server instances: 1
+2024-02-02 22:51:27 INFO  Instance addrress: 10.15.18.220:60706
+2024-02-02 22:53:43 INFO  Instance addrress: 10.15.18.220:60733
+2024-02-02 22:54:41 INFO  Instance addrress: 10.15.18.220:60749
+2024-02-02 22:54:48 ERROR Error in the client main loop.
+java.lang.NullPointerException: Cannot invoke "src.DTO.getData()" because "this.receivedData" is null
+	at src.threads.ClientCommunicationThread.readFile(ClientCommunicationThread.java:56) ~[classes/:?]
+	at src.Client.readFile(Client.java:125) ~[classes/:?]
+	at src.Client.main(Client.java:69) [classes/:?]
+2024-02-02 22:56:01 INFO  Instance addrress: 10.15.18.220:60763
+2024-02-02 23:08:54 INFO  Number of server instances: 1
+2024-02-02 23:08:54 INFO  Instance addrress: 10.15.18.220:62599
+2024-02-02 23:09:03 ERROR Error while listening for broadcast.
+2024-02-02 23:09:25 INFO  Instance addrress: 10.15.18.220:62611
+2024-02-02 23:09:41 ERROR Error in the client main loop.
+java.lang.NullPointerException: Cannot invoke "src.DTO.getOperation()" because "this.receivedData" is null
+	at src.threads.ClientCommunicationThread.createFile(ClientCommunicationThread.java:96) ~[classes/:?]
+	at src.Client.createFile(Client.java:91) ~[classes/:?]
+	at src.Client.main(Client.java:49) [classes/:?]
+2024-02-02 23:12:16 INFO  Instance addrress: 10.15.18.220:62634
+2024-02-02 23:12:22 ERROR Error in the client main loop.
+java.lang.NullPointerException: Cannot invoke "src.DTO.getOperation()" because "this.receivedData" is null
+	at src.threads.ClientCommunicationThread.createFile(ClientCommunicationThread.java:96) ~[classes/:?]
+	at src.Client.createFile(Client.java:91) ~[classes/:?]
+	at src.Client.main(Client.java:49) [classes/:?]
+2024-02-02 23:14:09 INFO  Instance addrress: 10.15.18.220:63301
+2024-02-02 23:17:07 INFO  Instance addrress: 192.168.33.8:58270
+2024-02-02 23:21:53 INFO  Instance addrress: 192.168.33.8:58465
+2024-02-02 23:31:49 INFO  Instance addrress: 10.8.18.194:59084
+2024-02-02 23:32:36 INFO  Instance addrress: 10.8.18.194:59095
+2024-02-02 23:33:30 INFO  Number of server instances: 1
+2024-02-02 23:34:22 INFO  Instance addrress: 10.8.18.194:59121
+2024-02-02 23:43:10 INFO  Instance addrress: 10.8.18.194:59194
+2024-02-02 23:43:44 ERROR Error in the client main loop.
+java.lang.NullPointerException: Cannot invoke "src.DTO.getOperation()" because "this.receivedData" is null
+	at src.threads.ClientCommunicationThread.createFile(ClientCommunicationThread.java:94) ~[classes/:?]
+	at src.Client.createFile(Client.java:91) ~[classes/:?]
+	at src.Client.main(Client.java:49) [classes/:?]
+2024-02-02 23:44:34 INFO  Instance addrress: 10.8.18.194:59216
+2024-02-02 23:47:29 INFO  Instance addrress: 10.8.18.194:59242
+2024-02-02 23:49:47 INFO  Instance addrress: 10.8.18.194:59267
+2024-02-02 23:49:53 ERROR Error in the client main loop.
+java.lang.NullPointerException: Cannot invoke "src.DTO.getOperation()" because "response" is null
+	at src.threads.ClientCommunicationThread.readFile(ClientCommunicationThread.java:63) ~[classes/:?]
+	at src.Client.readFile(Client.java:109) ~[classes/:?]
+	at src.Client.main(Client.java:57) [classes/:?]
+2024-02-02 23:50:10 INFO  Instance addrress: 10.8.18.194:59280
+2024-02-02 23:50:32 INFO  Instance addrress: 10.8.18.194:59289
+2024-02-02 23:51:59 INFO  Instance addrress: 10.8.18.194:59304
+2024-02-02 23:52:03 ERROR Error while processing client request.
+2024-02-02 23:52:14 ERROR Error while processing client request.
+2024-02-02 23:52:19 ERROR Error while processing client request.
+2024-02-02 23:55:18 INFO  Instance addrress: 10.8.18.194:59339
+2024-02-02 23:58:18 INFO  Instance addrress: 10.8.18.194:59361
+2024-02-02 23:58:25 ERROR Error while processing client request.
+2024-02-02 23:58:56 INFO  Instance addrress: 10.8.18.194:59376
+2024-02-02 23:59:01 ERROR Error while processing client request.
+2024-02-02 23:59:14 ERROR Error while processing client request.
+2024-02-03 00:01:46 INFO  Instance addrress: 10.8.18.194:59399
+2024-02-03 00:01:51 ERROR Error while processing client request.
+2024-02-03 00:02:09 ERROR Error in the client main loop.
+java.lang.NullPointerException: Cannot invoke "src.DTO.getOperation()" because "response" is null
+	at src.threads.ClientCommunicationThread.readFile(ClientCommunicationThread.java:63) ~[classes/:?]
+	at src.Client.readFile(Client.java:107) ~[classes/:?]
+	at src.Client.main(Client.java:54) [classes/:?]
+2024-02-03 00:02:39 INFO  Instance addrress: 10.8.18.194:59409
+2024-02-03 00:02:41 ERROR Error while processing client request.
+2024-02-03 00:03:24 INFO  Instance addrress: 10.8.18.194:59420
+2024-02-03 00:03:28 ERROR Error while processing client request.
+2024-02-03 00:04:49 INFO  Instance addrress: 10.8.18.194:59441
+2024-02-03 00:06:15 INFO  Instance addrress: 10.8.18.194:59460
+2024-02-03 00:08:20 INFO  Instance addrress: 10.8.18.194:59484
+2024-02-03 00:08:44 INFO  Instance addrress: 10.8.18.194:59493
+2024-02-03 00:09:53 INFO  Instance addrress: 10.8.18.194:59504
+2024-02-03 00:10:37 INFO  Instance addrress: 10.8.18.194:59524
+2024-02-03 00:11:24 INFO  Instance addrress: 10.8.18.194:59535
+2024-02-03 00:11:41 INFO  Instance addrress: 10.8.18.194:59543
+2024-02-03 00:12:29 INFO  Instance addrress: 10.8.18.194:59556
